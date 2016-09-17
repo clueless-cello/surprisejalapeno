@@ -8,8 +8,6 @@ import BubbleChart from './BubbleChart.jsx';
 // import node from './NationalMap.jsx'; // NODE FILE
 
 // const USA = rd3.Component;
-
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -42,7 +40,7 @@ class App extends React.Component {
     // const encoded = encodeURIComponent(query);
     // console.log('encoded: ', encoded);
     /* global $ */
-    const locObj = JSON.stringify(loc);
+    const locObj = loc;
 
     const getRating = () => {
       const ratings = [4, 6, 8, 10, 11, 8, 20];
@@ -78,7 +76,7 @@ class App extends React.Component {
     const socket = io.connect(`ws://${location.host}`);
 
     socket.on('connect', (data) => {
-      console.log('connected!');
+      console.log('conected');
       socket.emit('request articles', locObj);
     });
 
