@@ -11,6 +11,37 @@ module.exports = {
           console.log('Error fetching all data: ', err);
         });
     },
+
+    fetchBatches(loc, moreToFind) {
+      let offset = 0;
+      let batchSize = 10;
+      const keepLooking = moreToFind || true;
+      if (keepLooking = false) {
+        return;
+      }
+
+      db.News.findAll({
+        where: {
+          queryLoc: loc
+        },
+        offset: offset,
+        limit: batchSize
+      })
+      .then((data) => {
+        // send data to socket
+        offset += 10;
+        batchSize += 10;
+        if (data.length > 0) {
+          this.fetchBatches(loc, true);
+        } else {
+          this.fetchBatches(loc, false);
+        }
+        return;
+      })
+      .catch((err) => {
+        console.log('Error with batch find: ', err);
+      });
+    },
     // getByTitle(title) {
     //   return db('news').where('title', title)
     //   .catch(err => console.log(`Error getting record by title ${err}`));
