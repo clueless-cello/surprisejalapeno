@@ -1,6 +1,10 @@
 const path = require('path');
 const express = require('express');
 
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
+
 /* api_controllers/news is the main handler for handling a query from the front
  * end. The only route on the api is /query with a query parameter, 'q'
  * the handler looks for q, sends it to the Google geocoding API to turn the
@@ -9,9 +13,16 @@ const express = require('express');
  * Then we put the results of the watson query into the db, and return a query
  * by range from the db.
  */
+const response = { hello: 'world' };
+io.on('connect', (client) => {
+  console.log('Client connected...');
 
-const app = express();
+  client.on('join', (data) => {
+    console.log('This should be YOLO, ', data);
+  });
 
+  client.emit('new articles', () => response);
+});
 // middleware is all in config/middleware
 require('./config/middleware')(app, express);
 
@@ -24,6 +35,6 @@ require('./config/routes')(app, express);
 const port = process.env.PORT;
 // const port = 3000;
 
-app.listen(port, () => console.log('Listening on port', port));
+server.listen(port, () => console.log('Listening on port', port));
 
 module.exports = app;

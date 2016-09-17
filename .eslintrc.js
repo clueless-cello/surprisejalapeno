@@ -1,4 +1,7 @@
 module.exports = {
+    "ecmaFeatures": {
+      "blockBindings": true
+    },
     "extends": [
         "airbnb",
         "plugin:react/recommended"

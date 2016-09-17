@@ -8,7 +8,7 @@ const goog = require('../api_helpers/goog');
 
 // Given a list of entities from the Watson API,
 // return an obj with lat and lng params.
-function getGeo(ent) {
+const getGeo = (ent) => {
   let max = 0;
   const geo = { lat: 0, lng: 0 };
   // Look at each of the entities, if it has a lat and lon check
@@ -25,11 +25,11 @@ function getGeo(ent) {
     }
   });
   return geo;
-}
+};
 
 const roundSentiment = (num) => (Math.round(((num + 1) / 2) * 100) + 240);
 
-function resultsToDb(results, city) {
+const resultsToDb = (results, city) => {
   // toAdd is an Array of results formatted to match the db schema
   const toAdd = results.docs.map(doc => {
     const d = doc.source;
@@ -57,7 +57,7 @@ function resultsToDb(results, city) {
   });
   // pass toAdd to the db
   return model.news.add(toAdd);
-}
+};
 
 // Google API returns array of objects
 // We only want the city value so we need to loop
@@ -93,7 +93,7 @@ const storeWatson = (city, location) => (
     })
 );
 
-function handleSearch(req, res, next) {
+const handleSearch = (req, res, next) => {
   const location = JSON.parse(req.query.q);
   const address = location.gmaps.address_components;
   const city = findCity(address);
@@ -110,9 +110,9 @@ function handleSearch(req, res, next) {
   // TURN WATSON ON AND OFF BY:
   // Swapping comments on lines 113/114 with 115
 
-  storeWatson(city, location)
-    .then(model.news.getByLocation(city))
-  // model.news.getByLocation(city)
+  // storeWatson(city, location)
+  //   .then(model.news.getByLocation(city))
+  model.news.getByLocation(city)
     .then(dbResponse => {
       // console.log('Query Results to getByLocation: ', dbResponse);
       // console.log('handleSearch dbResponse: ', dbResponse);
@@ -120,7 +120,7 @@ function handleSearch(req, res, next) {
       res.json(dbResponse);
     })
     .catch(e => next(e));
-}
+};
 
 
 exports.handleSearch = handleSearch;

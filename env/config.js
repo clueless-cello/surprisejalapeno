@@ -1,7 +1,7 @@
 module.exports = {
-  watsonAPI: '',
-  googGeoAPI: '',
-  DB_HOST: '',
-  DB_USER: '',
-  DB_PASSWORD: ''
+  watsonAPI: 'Your API here',
+  googGeoAPI: 'Your API here',
+  DB_HOST: 'Your Credentials here',
+  DB_USER: 'Your Credentials here',
+  DB_PASSWORD: 'Your Credentials here'
 };
