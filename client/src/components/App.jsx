@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 
 import Search from './Search.jsx';
 import BubbleChart from './BubbleChart.jsx';
-// import NationalMap from './NationalMap.jsx'; // NODE FILE
+// import node from './NationalMap.jsx'; // NODE FILE
 
 // const USA = rd3.Component;
 
@@ -14,43 +14,13 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    // //////start testing//////////
-    // to assign a random category (will come from db later)
-    // const getCategory = () => Math.floor(Math.random() * 4);
-
-    // // to assign a random rating (will come from db later)
-    // const getRating = () => {
-    //   const ratings = [4, 6, 8, 10, 11, 8, 20];
-    //   const rating = ratings[Math.floor(Math.random() * ratings.length)];
-    //   return rating;
-    // };
-
-    // console.log(getRating());
-
-    // const moodFactor = (obj) => {
-    //   const sentimentLevel = {
-    //     '-1': 0,
-    //     '-0.75': 1,
-    //     '-0.50': 2,
-    //     '-0.25': 3,
-    //     0: 4,
-    //     0.25: 5,
-    //     0.50: 6,
-    //     0.75: 7,
-    //     1: 8
-    //   };
-    //   if (obj.sentimentScore) {
-    //     return sentimentLevel[obj.sentimentScore];
-    //   }
-    //   return sentimentLevel[0];
-    // };
-
     this.state = {
       location: '',
       // remember to change back to empty array after done using dummy data
       data: [],
       numBubbles: 0,
-      d3: ''
+      d3: '',
+      map: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/H1N1_USA_Map_by_confirmed_deaths.svg'
     };
 
     // this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
@@ -61,7 +31,7 @@ class App extends React.Component {
   }
 
   // componentDidMount() {
-  //   this.setState({ d3: NationalMap });
+  //   this.setState({ d3: node });
   // }
 
   getNewsByLocation(loc) {
@@ -106,7 +76,6 @@ class App extends React.Component {
       });
     };
 
-    // Put the socket emit within this
     const socket = io.connect(`ws://${location.host}`);
 
     socket.on('connect', (data) => {
@@ -129,7 +98,6 @@ class App extends React.Component {
             });
         });
     });
-
   }
 
   handleSuggestionSelect(e) {
@@ -176,8 +144,14 @@ class App extends React.Component {
             />
           </section>
           <section>
-            <BubbleChart data={this.state.data} handleClick={this.handleClick} />
+            <BubbleChart
+              data={this.state.data}
+              handleClick={this.handleClick}
+            />
           </section>
+        </div>
+        <div>
+          <img src={this.state.map} alt="US Map" />
         </div>
       </div>
     );

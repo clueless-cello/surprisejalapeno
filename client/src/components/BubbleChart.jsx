@@ -69,11 +69,11 @@ const BubbleChart = ({ data, handleClick }) => (
           src={d.image}
           alt="bubble"
           style={{
-            'border-style': 'solid',
-            'border-width': '5px',
+            borderStyle: 'solid',
+            borderWidth: '5px',
             // 'border-color': `hsl(${d.sentiment[0]}, ${d.sentiment[1]}, 50%)`,
-            'border-color': roundSentiment(d.sentiment),
-            'border-radius': '100%',
+            borderColor: roundSentiment(d.sentiment),
+            borderRadius: '100%',
             width: '100%',
             height: '100%'
           }}
