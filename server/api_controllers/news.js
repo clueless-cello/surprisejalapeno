@@ -1,5 +1,4 @@
 // const bing = require('./bing');
-
 const sherlock = require('../api_helpers/sherlock');
 
 const model = require('../db/model');

@@ -1,5 +1,4 @@
 const db = require('./config');
-const newsCtrls = require('./newsController');
 
 // Refactor to use query chainer:
 // http://docs.sequelizejs.com/en/1.7.0/docs/utils/#querychainer

@@ -78,7 +78,6 @@ class App extends React.Component {
     socket.on('connect', (data) => {
       console.log('conected');
       socket.emit('request articles', locObj);
-
     });
 
     socket.on('new articles', (data) => {
