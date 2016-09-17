@@ -4,14 +4,20 @@ const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const sockets = require('./config/sockets');
 
-// require('./config/sockets')(server);
+const newsController = require('./api_controllers/news');
 
-io.on('connect', sockets.connection);
-io.on('connect_error', (err) => {
-  console.log(err);
+io.on('connect', (client) => {
+  console.log('Client connected...');
+
+  client.on('request articles', (location) => {
+    newsController.handleSearch(location)
+      .then(dbResponse => client.emit('new articles', dbResponse))
+      .catch(e => console.log(e));
+  });
 });
+
+
 
 /* api_controllers/news is the main handler for handling a query from the front
  * end. The only route on the api is /query with a query parameter, 'q'

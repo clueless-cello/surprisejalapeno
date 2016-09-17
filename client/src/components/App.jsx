@@ -5,68 +5,20 @@ import io from 'socket.io-client';
 
 import Search from './Search.jsx';
 import BubbleChart from './BubbleChart.jsx';
-// import NationalMap from './NationalMap.jsx'; // NODE FILE
+// import node from './NationalMap.jsx'; // NODE FILE
 
 // const USA = rd3.Component;
-
-const practice = { label: 'San Francisco, CA, United States',
-  placeId: 'ChIJIQBpAG2ahYAR_6128GcTUEo',
-  isFixture: false,
-  gmaps:
-   { address_components: [ [Object], [Object], [Object], [Object] ],
-     formatted_address: 'San Francisco, CA, USA',
-     geometry:
-      { bounds: [Object],
-        location: [Object],
-        location_type: 'APPROXIMATE',
-        viewport: [Object] },
-     place_id: 'ChIJIQBpAG2ahYAR_6128GcTUEo',
-     types: [ 'locality', 'political' ] },
-  location: { lat: 37.7749295, lng: -122.41941550000001 } }
-
-
-
 class App extends React.Component {
   constructor(props) {
     super(props);
-
-    // //////start testing//////////
-    // to assign a random category (will come from db later)
-    // const getCategory = () => Math.floor(Math.random() * 4);
-
-    // // to assign a random rating (will come from db later)
-    // const getRating = () => {
-    //   const ratings = [4, 6, 8, 10, 11, 8, 20];
-    //   const rating = ratings[Math.floor(Math.random() * ratings.length)];
-    //   return rating;
-    // };
-
-    // console.log(getRating());
-
-    // const moodFactor = (obj) => {
-    //   const sentimentLevel = {
-    //     '-1': 0,
-    //     '-0.75': 1,
-    //     '-0.50': 2,
-    //     '-0.25': 3,
-    //     0: 4,
-    //     0.25: 5,
-    //     0.50: 6,
-    //     0.75: 7,
-    //     1: 8
-    //   };
-    //   if (obj.sentimentScore) {
-    //     return sentimentLevel[obj.sentimentScore];
-    //   }
-    //   return sentimentLevel[0];
-    // };
 
     this.state = {
       location: '',
       // remember to change back to empty array after done using dummy data
       data: [],
       numBubbles: 0,
-      d3: ''
+      d3: '',
+      map: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/H1N1_USA_Map_by_confirmed_deaths.svg'
     };
 
     // this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
@@ -77,7 +29,7 @@ class App extends React.Component {
   }
 
   // componentDidMount() {
-  //   this.setState({ d3: NationalMap });
+  //   this.setState({ d3: node });
   // }
 
   getNewsByLocation(loc) {
@@ -88,80 +40,62 @@ class App extends React.Component {
     // const encoded = encodeURIComponent(query);
     // console.log('encoded: ', encoded);
     /* global $ */
-    const locObj = JSON.stringify(loc);
+    const locObj = loc;
 
-    // Put the socket emit within this
+    const getRating = () => {
+      const ratings = [4, 6, 8, 10, 11, 8, 20];
+      return ratings[Math.floor(Math.random() * ratings.length)];
+    };
+
+    const getGif = (query) =>
+      new Promise((resolve, reject) => {
+        $.ajax({
+          method: 'GET',
+          url: 'http://api.giphy.com/v1/gifs/search',
+          dataType: 'json',
+          data: {
+            q: query,
+            api_key: 'dc6zaTOxFJmzC'
+          },
+          rejectUnauthorized: false,
+          success: (d) => {
+            resolve(d.data[0].images.original.url);
+            //console.log('GIF DATA: ', d);
+            //testObj.image = d.data[0].images.original.url;
+            //reqCount--;
+            //if (reqCount === 0) {
+              //this.setState({ data });
+            //}
+          },
+          error: (err) => {
+            console.log('Get GIF error: ', err);
+          }
+        });
+      });
+
     const socket = io.connect(`ws://${location.host}`);
 
     socket.on('connect', (data) => {
-      console.log('connected!');
-      socket.emit('request articles');
+      console.log('conected');
+      socket.emit('request articles', locObj);
+
     });
 
     socket.on('new articles', (data) => {
-      console.log('articles: ', practice);
+      data = data.slice(0, 50);
+
+      let reqCount = 0;
+      data.forEach((storyObj) => {
+        storyObj.rating = getRating();
+        reqCount++;
+        getGif(storyObj.title)
+          .then((url) => {
+            console.log(url);
+            storyObj.image = url;
+            this.setState({ data: this.state.data.concat(storyObj) });
+          });
+      });
     });
-
-    //$.ajax({
-      //method: 'GET',
-      //url: '/query',
-      //dataType: 'json',
-      //data: { q: locObj },
-      //success: (data) => {
-        //// data = dummyData; //FOR TESTING - NEED TO REMOVE THIS LINE
-        //console.log('Success fetching data from /query: ', data);
-        //// to assign a random category (will come from db later)
-        //const getCategory = () => Math.floor(Math.random() * 4);
-
-        //// to assign a random rating (will come from db later)
-        //const getRating = () => {
-          //const ratings = [4, 6, 8, 10, 11, 8, 20];
-          //const rating = ratings[Math.floor(Math.random() * ratings.length)];
-          //return rating;
-        //};
-
-        //data = data.slice(0, 50);
-        //console.log('rendering', data.length, ' gifs');
-
-        //// iterate through story objects and assign random category and rating
-        //let reqCount = 0;
-        //data.forEach((storyObj) => {
-          //const testObj = storyObj;
-          //const rating = getRating();
-          //testObj.rating = rating;
-
-          //reqCount++;
-          //// Don't know why, but adding rejectUnauthorized: false makes the circles load.
-          //$.ajax({
-            //method: 'GET',
-            //url: 'http://api.giphy.com/v1/gifs/search',
-            //dataType: 'json',
-            //data: {
-              //q: storyObj.title,
-              //api_key: 'dc6zaTOxFJmzC'
-            //},
-            //rejectUnauthorized: false,
-            //success: (d) => {
-              //console.log('GIF DATA: ', d);
-              //testObj.image = d.data[0].images.original.url;
-              //reqCount--;
-              //if (reqCount === 0) {
-                //this.setState({ data });
-              //}
-            //},
-            //error: (err) => {
-              //console.log('Get GIF error: ', err);
-            //}
-          //});
-        //});
-
-        //// changed from data.value
-        //this.setState({ data });
-      //},
-      //error: (err) => {
-        //console.log('getNews err ', err);
-      //}
-    //});
   }
 
   handleSuggestionSelect(e) {
@@ -208,8 +142,14 @@ class App extends React.Component {
             />
           </section>
           <section>
-            <BubbleChart data={this.state.data} handleClick={this.handleClick} />
+            <BubbleChart
+              data={this.state.data}
+              handleClick={this.handleClick}
+            />
           </section>
+        </div>
+        <div>
+          <img src={this.state.map} alt="US Map" />
         </div>
       </div>
     );

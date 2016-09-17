@@ -102,6 +102,7 @@ const storeWatson = (city, location) => (
 );
 
 const handleSearch = (location) => {
+  // console.log(location);
   const address = location.gmaps.address_components;
   const city = findCity(address);
 
@@ -120,9 +121,7 @@ const handleSearch = (location) => {
   // storeWatson(city, location)
   //  .then(model.news.getByLocation(city))
 
-  model.news.getByLocation(city)
-    .then(dbResponse => res.json(dbResponse))
-    .catch(e => next(e));
+  return model.news.getByLocation(city);
 };
 
 module.exports = { handleSearch, storeWatson };
