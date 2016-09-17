@@ -7,17 +7,33 @@ const io = require('socket.io')(server);
 
 const newsController = require('./api_controllers/news');
 
-io.on('connect', (client) => {
-  console.log('Client connected...');
 
-  client.on('request articles', (location) => {
+io.on('connect', client => {
+  console.log('Client connected...');
+  const requests = {};
+
+  client.on('request articles', location => {
+    requests[location.label] = requests[location.label]
+      ? requests[location.label] + 1
+      : 1;
+    let articleQueue = [];
+    let articleLoc = 0;
     newsController.handleSearch(location)
-      .then(dbResponse => client.emit('new articles', dbResponse))
+      .then(dbArticles => {
+        articleQueue = articleQueue.concat(dbArticles);
+        setInterval(() => {
+          if (articleLoc < articleQueue.length && articleLoc < 10) {
+            client.emit('new articles', [
+              articleQueue[articleLoc++],
+              articleQueue[articleLoc++],
+              articleQueue[articleLoc++]
+            ]);
+          }
+        }, 500);
+      })
       .catch(e => console.log(e));
   });
 });
-
-
 
 /* api_controllers/news is the main handler for handling a query from the front
  * end. The only route on the api is /query with a query parameter, 'q'
