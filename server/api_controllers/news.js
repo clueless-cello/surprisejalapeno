@@ -8,7 +8,7 @@ const goog = require('../api_helpers/goog');
 
 // Given a list of entities from the Watson API,
 // return an obj with lat and lng params.
-const getGeo = (ent) => {
+function getGeo(ent) {
   let max = 0;
   const geo = { lat: 0, lng: 0 };
   // Look at each of the entities, if it has a lat and lon check
@@ -25,11 +25,19 @@ const getGeo = (ent) => {
     }
   });
   return geo;
-};
+}
 
 const roundSentiment = (num) => (Math.round(((num + 1) / 2) * 100) + 240);
 
-const resultsToDb = (results, city) => {
+// const roundSentiment = (num) => {
+//   const value = Math.round((Math.abs(num * 100)));
+//   if (num <= 0) {
+//     return [360, value];
+//   }
+//   return [250, value];
+// };
+
+function resultsToDb(results, city) {
   // toAdd is an Array of results formatted to match the db schema
   const toAdd = results.docs.map(doc => {
     const d = doc.source;
@@ -57,7 +65,7 @@ const resultsToDb = (results, city) => {
   });
   // pass toAdd to the db
   return model.news.add(toAdd);
-};
+}
 
 // Google API returns array of objects
 // We only want the city value so we need to loop
@@ -93,7 +101,7 @@ const storeWatson = (city, location) => (
     })
 );
 
-const handleSearch = (req, res, next) => {
+function handleSearch(req, res, next) {
   const location = JSON.parse(req.query.q);
   const address = location.gmaps.address_components;
   const city = findCity(address);
@@ -110,17 +118,36 @@ const handleSearch = (req, res, next) => {
   // TURN WATSON ON AND OFF BY:
   // Swapping comments on lines 113/114 with 115
 
-  // storeWatson(city, location)
-  //   .then(model.news.getByLocation(city))
-  model.news.getByLocation(city)
-    .then(dbResponse => {
-      // console.log('Query Results to getByLocation: ', dbResponse);
-      // console.log('handleSearch dbResponse: ', dbResponse);
-      // send the response from the db getbylocation as json
-      res.json(dbResponse);
+  // sherlock is the Watson API file
+  // give it the word from the query
+  // send the results to the db after some light parsing and then
+
+  sherlock.getByPlace(city)
+    .then(d => resultsToDb(d, city))
+    .then(() => {
+      // console.log('wait for geocoding api complete');
+      // wait for the geocoding api to return (if it hasn't already)
+      goog.geocode(location.label)
+      .then((l) => {
+        // console.log('Result of goog.geocode in news.js: ', l.json.results);
+          // get the latitutde and longitude out of the center of the
+          // geometry returned by the geocoding api
+        const toSearch = l.json.results[0].geometry.location;
+          // models searches by a radius. This is just hard coded
+          // this could be used as user input later
+        toSearch.rad = 25;
+        // Currently querying EVERYTHING, but should change to location
+        model.news.getByLocation(city)
+          .then(dbResponse => {
+            // console.log('Query Results to getByLocation: ', dbResponse);
+            // console.log('handleSearch dbResponse: ', dbResponse);
+            // send the response from the db getbylocation as json
+            res.json(dbResponse);
+          });
+      });
     })
     .catch(e => next(e));
-};
+}
 
 
 exports.handleSearch = handleSearch;

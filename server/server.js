@@ -21,7 +21,7 @@ io.on('connect', (client) => {
     console.log('This should be YOLO, ', data);
   });
 
-  client.emit('new articles', () => response);
+  client.emit('new articles', response);
 });
 // middleware is all in config/middleware
 require('./config/middleware')(app, express);

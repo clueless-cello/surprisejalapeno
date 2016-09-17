@@ -182,7 +182,7 @@ text {
 .tooltip{
   max-width: 20em;
   max-height: 30em;
-  overflow: scroll;
+  overflow: hidden;
 }
 
 .tooltip h1{

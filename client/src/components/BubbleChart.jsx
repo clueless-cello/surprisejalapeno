@@ -42,6 +42,20 @@ const setTooltip = (elem, data) => {
   console.log(elem, data);
 };
 
+const roundSentiment = (sentimentValue) => {
+  const num = sentimentValue - 290;
+  const value = Math.abs(num);
+
+  const final = 20 * Math.round(value / 20);
+
+  if (num < 0) {
+    return `hsl(360, ${final + 20}%, 50%)`;
+  } else if (num > 0) {
+    return `hsl(250, ${final + 20}%, 50%)`;
+  }
+  return 'hsl(250, 0%, 50%)';
+};
+
 console.log('INSIDE BUBBLECHART');
 const BubbleChart = ({ data, handleClick }) => (
   <ReactBubbleChart
@@ -67,7 +81,8 @@ const BubbleChart = ({ data, handleClick }) => (
           style={{
             'border-style': 'solid',
             'border-width': '5px',
-            'border-color': `hsl(${d.sentiment}, 100%, 50%)`,
+            // 'border-color': `hsl(${d.sentiment[0]}, ${d.sentiment[1]}, 50%)`,
+            'border-color': roundSentiment(d.sentiment),
             'border-radius': '100%',
             width: '100%',
             height: '100%'
