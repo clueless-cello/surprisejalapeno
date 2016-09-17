@@ -1,4 +1,5 @@
 const db = require('./config');
+const newsCtrls = require('./newsController');
 
 // Refactor to use query chainer:
 // http://docs.sequelizejs.com/en/1.7.0/docs/utils/#querychainer
@@ -10,7 +11,6 @@ const tests = {
     if (keepLooking === false) {
       return;
     }
-
     db.News.findAll({
       where: {
         queryLoc: loc
@@ -51,19 +51,14 @@ module.exports = {
           console.log('Error fetching all data: ', err);
         });
     },
-
-    // getByTitle(title) {
-    //   return db('news').where('title', title)
-    //   .catch(err => console.log(`Error getting record by title ${err}`));
-    // },
-
-    // Build test queries here:
-    test(req, res, next) {
+    test(req, res) {
       const city = req.body.city;
-      console.log('Testing batch find with city: ', city);
+      console.log('Testing query emitter with city: ', city);
       tests.fetchBatches(res, city);
+        // .then((data) => {
+        //   res.send(data);
+        // });
     },
-
     getByLocation(loc) {
       return db.News.findAll({
         where: {
@@ -73,14 +68,6 @@ module.exports = {
       .catch((err) => console.log('Error fetching loc data: ', err));
     },
     add(data) {
-      // expects data to be formatted as
-      // {title: '', rating: num, category: '', ...etc}
-      // can take an array of data objects -> [{...}, {...}, ...]
-      // resolves promise with id of first inserted record -> [id]
-      // return db('news').insert(data, 'id')
-      // .catch(err => console.log(`Error inserting into "news" table`
-      //   // `${err}`
-      //   ));
       return db.News.bulkCreate(data, { ignoreDuplicates: true })
         .then((dbRes) => {
           // Only return articles that have:
