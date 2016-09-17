@@ -178,3 +178,17 @@ text {
 .geosuggest-item--active:focus {
   background: #ccc;
 }
+
+.tooltip{
+  max-width: 20em;
+  max-height: 30em;
+  overflow: scroll;
+}
+
+.tooltip h1{
+  margin .125em;
+}
+
+.tooltip p{
+  margin .125em;
+}
