@@ -9,6 +9,9 @@ const sockets = require('./config/sockets');
 // require('./config/sockets')(server);
 
 io.on('connect', sockets.connection);
+io.on('connect_error', (err) => {
+  console.log(err);
+});
 
 /* api_controllers/news is the main handler for handling a query from the front
  * end. The only route on the api is /query with a query parameter, 'q'

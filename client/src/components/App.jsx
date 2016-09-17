@@ -9,6 +9,22 @@ import BubbleChart from './BubbleChart.jsx';
 
 // const USA = rd3.Component;
 
+const practice = { label: 'San Francisco, CA, United States',
+  placeId: 'ChIJIQBpAG2ahYAR_6128GcTUEo',
+  isFixture: false,
+  gmaps:
+   { address_components: [ [Object], [Object], [Object], [Object] ],
+     formatted_address: 'San Francisco, CA, USA',
+     geometry:
+      { bounds: [Object],
+        location: [Object],
+        location_type: 'APPROXIMATE',
+        viewport: [Object] },
+     place_id: 'ChIJIQBpAG2ahYAR_6128GcTUEo',
+     types: [ 'locality', 'political' ] },
+  location: { lat: 37.7749295, lng: -122.41941550000001 } }
+
+
 
 class App extends React.Component {
   constructor(props) {
@@ -83,7 +99,7 @@ class App extends React.Component {
     });
 
     socket.on('new articles', (data) => {
-      console.log('articles: ', data);
+      console.log('articles: ', practice);
     });
 
     //$.ajax({
