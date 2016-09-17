@@ -49,8 +49,8 @@ class App extends React.Component {
       return ratings[Math.floor(Math.random() * ratings.length)];
     };
 
-    const getGif = (query) => {
-      return new Promise((resolve, reject) => {
+    const getGif = (query) =>
+      new Promise((resolve, reject) => {
         $.ajax({
           method: 'GET',
           url: 'http://api.giphy.com/v1/gifs/search',
@@ -74,7 +74,6 @@ class App extends React.Component {
           }
         });
       });
-    };
 
     const socket = io.connect(`ws://${location.host}`);
 
@@ -84,19 +83,19 @@ class App extends React.Component {
     });
 
     socket.on('new articles', (data) => {
-        data = data.slice(0, 50);
+      data = data.slice(0, 50);
 
-        let reqCount = 0;
-        data.forEach((storyObj) => {
-          storyObj.rating = getRating();;
-          reqCount++;
-          getGif(storyObj.title)
-            .then((url) => {
-              console.log(url);
-              storyObj.image = url;
-              this.setState({ data: this.state.data.concat(storyObj) });
-            });
-        });
+      let reqCount = 0;
+      data.forEach((storyObj) => {
+        storyObj.rating = getRating();
+        reqCount++;
+        getGif(storyObj.title)
+          .then((url) => {
+            console.log(url);
+            storyObj.image = url;
+            this.setState({ data: this.state.data.concat(storyObj) });
+          });
+      });
     });
   }
 
