@@ -192,3 +192,12 @@ text {
 .tooltip p{
   margin .125em;
 }
+
+/*
+FOR THE MAP
+*/
+
+path {
+  fill: #ccc;
+  stroke: #fff;
+}

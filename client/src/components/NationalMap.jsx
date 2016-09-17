@@ -1,29 +1,23 @@
-// import React from 'react';
-// import d3 from 'd3';
+import React from 'react';
+import d3 from 'd3';
+import topojson from 'topojson';
 
-// var node = document.createElement('div');
+const node = document.createElement('div');
 
-// var width = 960,
-//     height = 500;
+const width = 960;
 
-// var svg = d3.select(node).append("svg")
-//     .attr("width", width)
-//     .attr("height", height);
+const height = 500;
 
-// var defs = svg.append("defs");
+const path = d3.geo.path();
 
-//  defs.append("clipPath")
-//     .attr("id", "circle1")
-//   .append("circle")
-//     .attr("cx", 350)
-//     .attr("cy", 200)
-//     .attr("r", 180);
+const svg = d3.select(node).append('svg')
+    .attr('width', width)
+    .attr('height', height);
 
-// defs.append("clipPath")
-//     .attr("id", "circle2")
-//   .append("circle")
-//     .attr("cx", 550)
-//     .attr("cy", 200)
-//     .attr("r", 180);
+d3.json('../../mapPlain.json', (error, topology) => {
+  if (error) throw error;
 
-// module.exports = node
+  svg.append('path')
+      .datum(topojson.feature(topology, topology.objects.land))
+      .attr('d', path);
+});

@@ -59,14 +59,15 @@
     "mysql": "^2.11.1",
     "path": "^0.12.7",
     "react": "^15.3.1",
-    "react-d3-library": "^1.1.7",
     "react-bubble-chart": "git://github.com/clueless-cello/react-bubble-chart.git#tmp_build",
+    "react-d3-library": "^1.1.7",
     "react-dom": "^15.3.1",
     "react-geosuggest": "^1.25.0",
     "request": "^2.74.0",
     "sequelize": "^3.24.3",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
+    "topojson": "^1.6.27",
     "webpack": "^1.13.2"
   }
 }
