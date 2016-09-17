@@ -74,78 +74,62 @@ class App extends React.Component {
     /* global $ */
     const locObj = JSON.stringify(loc);
 
+    const getRating = () => {
+      const ratings = [4, 6, 8, 10, 11, 8, 20];
+      return ratings[Math.floor(Math.random() * ratings.length)];
+    };
+
+    const getGif = (query) => {
+      return new Promise((resolve, reject) => {
+        $.ajax({
+          method: 'GET',
+          url: 'http://api.giphy.com/v1/gifs/search',
+          dataType: 'json',
+          data: {
+            q: query,
+            api_key: 'dc6zaTOxFJmzC'
+          },
+          rejectUnauthorized: false,
+          success: (d) => {
+            resolve(d.data[0].images.original.url);
+            //console.log('GIF DATA: ', d);
+            //testObj.image = d.data[0].images.original.url;
+            //reqCount--;
+            //if (reqCount === 0) {
+              //this.setState({ data });
+            //}
+          },
+          error: (err) => {
+            console.log('Get GIF error: ', err);
+          }
+        });
+      });
+    };
+
     // Put the socket emit within this
     const socket = io.connect(`ws://${location.host}`);
 
     socket.on('connect', (data) => {
       console.log('connected!');
-      socket.emit('request articles');
+      socket.emit('request articles', locObj);
     });
 
     socket.on('new articles', (data) => {
-      console.log('articles: ', data);
+        data = data.slice(0, 50);
+
+        let reqCount = 0;
+        data.forEach((storyObj) => {
+          storyObj.rating = getRating();;
+          reqCount++;
+          getGif(storyObj.title)
+            .then((url) => {
+              console.log(url);
+              storyObj.image = url;
+              this.setState({ data: this.state.data.concat(storyObj) });
+            });
+        });
     });
 
-    //$.ajax({
-      //method: 'GET',
-      //url: '/query',
-      //dataType: 'json',
-      //data: { q: locObj },
-      //success: (data) => {
-        //// data = dummyData; //FOR TESTING - NEED TO REMOVE THIS LINE
-        //console.log('Success fetching data from /query: ', data);
-        //// to assign a random category (will come from db later)
-        //const getCategory = () => Math.floor(Math.random() * 4);
-
-        //// to assign a random rating (will come from db later)
-        //const getRating = () => {
-          //const ratings = [4, 6, 8, 10, 11, 8, 20];
-          //const rating = ratings[Math.floor(Math.random() * ratings.length)];
-          //return rating;
-        //};
-
-        //data = data.slice(0, 50);
-        //console.log('rendering', data.length, ' gifs');
-
-        //// iterate through story objects and assign random category and rating
-        //let reqCount = 0;
-        //data.forEach((storyObj) => {
-          //const testObj = storyObj;
-          //const rating = getRating();
-          //testObj.rating = rating;
-
-          //reqCount++;
-          //// Don't know why, but adding rejectUnauthorized: false makes the circles load.
-          //$.ajax({
-            //method: 'GET',
-            //url: 'http://api.giphy.com/v1/gifs/search',
-            //dataType: 'json',
-            //data: {
-              //q: storyObj.title,
-              //api_key: 'dc6zaTOxFJmzC'
-            //},
-            //rejectUnauthorized: false,
-            //success: (d) => {
-              //console.log('GIF DATA: ', d);
-              //testObj.image = d.data[0].images.original.url;
-              //reqCount--;
-              //if (reqCount === 0) {
-                //this.setState({ data });
-              //}
-            //},
-            //error: (err) => {
-              //console.log('Get GIF error: ', err);
-            //}
-          //});
-        //});
-
-        //// changed from data.value
-        //this.setState({ data });
-      //},
-      //error: (err) => {
-        //console.log('getNews err ', err);
-      //}
-    //});
   }
 
   handleSuggestionSelect(e) {

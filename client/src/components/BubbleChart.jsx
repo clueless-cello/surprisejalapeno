@@ -4,14 +4,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactBubbleChart from 'react-bubble-chart';
 
-let idCounter = 0;
-
-const getID = () => {
-  idCounter++;
-  const stringID = idCounter.toString();
-  return stringID;
-};
-
 const Tooltip = ({ name, description }) => (
   <div className="tooltip">
     <h3>{name}</h3>
@@ -39,7 +31,6 @@ const setTooltip = (elem, data) => {
       name={data.data.title}
       description={data.data.description}
     />, elem);
-  console.log(elem, data);
 };
 
 const roundSentiment = (sentimentValue) => {
@@ -56,7 +47,6 @@ const roundSentiment = (sentimentValue) => {
   return 'hsl(250, 0%, 50%)';
 };
 
-console.log('INSIDE BUBBLECHART');
 const BubbleChart = ({ data, handleClick }) => (
   <ReactBubbleChart
     // colorLegend={colors}          // this renders everything black if undefined
@@ -69,7 +59,7 @@ const BubbleChart = ({ data, handleClick }) => (
     tooltipFunc={setTooltip}
     data={
       data.map(d => ({
-        _id: getID(),           // string, unique id (required) --> we didn't have this before React
+        _id: d.id,           // string, unique id (required) --> we didn't have this before React
         value: d.rating,             // number, to determine relative size of bubbles (required)
         colorValue: d.newsCategory,  // number, used to determine color
         selected: d.selected,        // boolean, uses selectedColor above for bubble if true
@@ -77,7 +67,7 @@ const BubbleChart = ({ data, handleClick }) => (
         data: d,
         displayText: <img
           src={d.image}
-          alt={console.log(d.sentiment)}
+          alt="bubble"
           style={{
             'border-style': 'solid',
             'border-width': '5px',
